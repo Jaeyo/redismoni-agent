@@ -3,8 +3,8 @@ package main
 import (
 	"redismoni-agent/rdb"
 	"fmt"
-	"redismoni-agent/common"
 	"flag"
+	"redismoni-agent/common/config"
 )
 
 func initConfig() {
@@ -13,7 +13,6 @@ func initConfig() {
 
 	flag.Parse()
 
-	config := common.GetConfigInstance()
 	config.SetDebug(*isDebug)
 
 	if needPrintVersion {
