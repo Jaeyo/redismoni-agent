@@ -16,6 +16,10 @@ func init() {
 	redisConfValues = make(map[string]string)
 
 	redisConfigFilePath := config.GetRedisConfigFilePath()
+	if len(redisConfigFilePath) == 0 {
+		util.ExitWithError("failed to find redis config file path")
+	}
+
 	redisConfigFilePath = path.Clean(redisConfigFilePath)
 	redisConfigFile, err := os.Open(redisConfigFilePath)
 	if err != nil {

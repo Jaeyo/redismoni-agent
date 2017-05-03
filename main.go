@@ -12,7 +12,7 @@ import (
 )
 
 func init() {
-	isDebug := flag.Bool("d", true, "debug mode")
+	isDebug := flag.Bool("d", false, "debug mode")
 	agentKey := flag.String("k", "", "agent key")
 	redisConfigFilePath := flag.String("c", "", "redis config file path")
 	needPrintVersion := flag.Bool("v", false, "print version")

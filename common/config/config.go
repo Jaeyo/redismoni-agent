@@ -35,7 +35,8 @@ func SetDebug(isDebug bool) {
 }
 
 func GetDebug() bool {
-	return getConfigValue("debug", false).(bool)
+	return getConfigValue("debug", true).(bool) // TODO modify
+
 }
 
 func GetVersion() string {
