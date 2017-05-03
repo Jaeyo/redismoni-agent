@@ -7,7 +7,7 @@ import (
 	"strings"
 	"strconv"
 	"redismoni-agent/common/config"
-	"redismoni-agent/common/logger"
+	"redismoni-agent/common/util"
 )
 
 var redisConfValues map[string]string
@@ -19,8 +19,7 @@ func init() {
 	redisConfigFilePath = path.Clean(redisConfigFilePath)
 	redisConfigFile, err := os.Open(redisConfigFilePath)
 	if err != nil {
-		logger.Error(err)
-		os.Exit(1)
+		util.ExitWithError(err)
 
 	}
 	defer redisConfigFile.Close()
@@ -52,7 +51,7 @@ func init() {
 }
 
 func GetBoolean(key string, defaultValue bool) (bool, error) {
-	value, exists := config.data[key]
+	value, exists := redisConfValues[key]
 	if !exists {
 		return defaultValue, nil
 	}
@@ -64,7 +63,7 @@ func GetBoolean(key string, defaultValue bool) (bool, error) {
 }
 
 func GetInt(key string, defaultValue int) (int, error) {
-	value, exists := config.data[key]
+	value, exists := redisConfValues[key]
 	if !exists {
 		return defaultValue, nil
 	}
@@ -76,7 +75,7 @@ func GetInt(key string, defaultValue int) (int, error) {
 }
 
 func GetString(key, defaultValue string) (string, error) {
-	value, exists := config.data[key]
+	value, exists := redisConfValues[key]
 	if !exists {
 		return defaultValue, nil
 	}

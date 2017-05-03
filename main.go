@@ -6,13 +6,13 @@ import (
 	"flag"
 	"redismoni-agent/common/config"
 	"os"
-	"redismoni-agent/common/logger"
 	"redismoni-agent/redisConfig"
 	"redismoni-agent/models"
+	"redismoni-agent/common/util"
 )
 
 func init() {
-	isDebug := flag.Bool("d", false, "debug mode")
+	isDebug := flag.Bool("d", true, "debug mode")
 	agentKey := flag.String("k", "", "agent key")
 	redisConfigFilePath := flag.String("c", "", "redis config file path")
 	needPrintVersion := flag.Bool("v", false, "print version")
@@ -20,12 +20,10 @@ func init() {
 	flag.Parse()
 
 	if len(*redisConfigFilePath) == 0 {
-		logger.Error("redis config file path not specified")
-		os.Exit(1)
+		util.ExitWithError("redis ocnfig file path not specified")
 	}
 	if len(*agentKey) == 0 {
-		logger.Error("agent key not specified")
-		os.Exit(1)
+		util.ExitWithError("agent key not specified")
 	}
 
 	config.SetRedisConfigFilePath(*redisConfigFilePath)
@@ -53,30 +51,29 @@ func main() {
 	fmt.Println(infoVal, rdbVal)
 }
 
+
+
 func getRdbDumpPath() string {
 	rdbDumpPath, err := redisConfig.GetString("dbfilename", "")
 	if err != nil {
-		logger.Error(err)
-		os.Exit(1)
+		util.ExitWithError(err)
 	}
 	if len(rdbDumpPath) == 0 {
-		logger.Error("rdb file path not specified in redis configution")
-		os.Exit(1)
+		util.ExitWithError("rdb file path not specified in redis configuration")
 	}
 
 	return rdbDumpPath
 }
 
 func getInfoMetrics(c chan int) {
-	c <- 1
+	// TODO IMME
 }
 
 func getRdbMetrics(rdbDumpPath string, c chan []*models.Metric) {
 	profiler := rdb.NewProfiler()
 	memUsages, err := profiler.StartProfile(rdbDumpPath)
 	if err != nil {
-		logger.Error(err)
-		os.Exit(1)
+		util.ExitWithError(err)
 	}
 
 	metrics := []*models.Metric{}

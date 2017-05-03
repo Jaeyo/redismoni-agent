@@ -19,7 +19,7 @@ func SetRedisConfigFilePath(path string) {
 }
 
 func GetRedisConfigFilePath() string {
-	return string(getConfigValue("redisConfigFilePath", ""))
+	return getConfigValue("redisConfigFilePath", "").(string)
 }
 
 func SetAgentKey(agentKey string) {
@@ -27,7 +27,7 @@ func SetAgentKey(agentKey string) {
 }
 
 func getAgentKey() string {
-	return string(getConfigValue("agentKey", ""))
+	return getConfigValue("agentKey", "").(string)
 }
 
 func SetDebug(isDebug bool) {
@@ -35,9 +35,9 @@ func SetDebug(isDebug bool) {
 }
 
 func GetDebug() bool {
-	return bool(getConfigValue("debug", false))
+	return getConfigValue("debug", false).(bool)
 }
 
 func GetVersion() string {
-	return string(getConfigValue("version", ""))
+	return getConfigValue("version", "").(string)
 }

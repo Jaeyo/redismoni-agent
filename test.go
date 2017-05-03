@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"redismoni-agent/redisConfig"
+	"redismoni-agent/redisInfo"
 )
 
 func checkError(err error) {
@@ -12,9 +12,6 @@ func checkError(err error) {
 }
 
 func main() {
-	config, err := redisConfig.NewConfiguration("./redis-master.conf")
-	checkError(err)
-	port, err := config.GetInt("port", -1)
-	checkError(err)
-	fmt.Println(port)
+	info := redisInfo.GetInfo()
+	fmt.Println(info)
 }
