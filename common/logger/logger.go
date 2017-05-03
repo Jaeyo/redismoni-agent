@@ -5,14 +5,11 @@ import (
 	"fmt"
 	"log/syslog"
 	"log"
-	"sync"
 )
 
-var infoSysLogger *log.Logger
 var loggers map[syslog.Priority]*log.Logger
-var once sync.Once
 
-func initLoggers() {
+func init() {
 	loggers = make(map[syslog.Priority]*log.Logger)
 	for _, priority := range []syslog.Priority{syslog.LOG_INFO, syslog.LOG_DEBUG, syslog.LOG_WARNING, syslog.LOG_ERR} {
 		syslogger, err := syslog.NewLogger(priority, 0)
@@ -40,10 +37,6 @@ func priorityToString(priority syslog.Priority) string {
 }
 
 func sendLog(priority syslog.Priority, msg ...interface{}) {
-	once.Do(func() {
-		initLoggers()
-	})
-
 	if config.GetDebug() {
 		fmt.Println(priorityToString(priority), msg)
 	}

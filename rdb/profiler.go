@@ -9,15 +9,19 @@ import (
 
 
 type MemoryUsage struct {
-	stringUsage int64
-	hashUsage int64
-	setUsage int64
-	listUsage int64
-	sortedSetUsage int64
+	StringUsage    int64
+	HashUsage      int64
+	SetUsage       int64
+	ListUsage      int64
+	SortedSetUsage int64
 }
 
 func newMemoryUsage() *MemoryUsage {
 	return &MemoryUsage{}
+}
+
+func (memoryUsage *MemoryUsage) GetTotal() int64 {
+	return memoryUsage.StringUsage + memoryUsage.HashUsage + memoryUsage.SetUsage + memoryUsage.ListUsage + memoryUsage.SortedSetUsage
 }
 
 type Profiler struct {
@@ -69,11 +73,11 @@ func (profiler *Profiler) ResizeDatabase(dbSize, expiresSize uint32) {
 }
 
 func (profiler *Profiler) Set(key, value []byte, expiry int64) {
-	profiler.getCurrentMemoryUsage().setUsage += int64(len(key) + len(value))
+	profiler.getCurrentMemoryUsage().SetUsage += int64(len(key) + len(value))
 }
 
 func (profiler *Profiler) StartHash(key []byte, length, expiry int64) {
-	profiler.getCurrentMemoryUsage().hashUsage += int64(len(key)) + length
+	profiler.getCurrentMemoryUsage().HashUsage += int64(len(key)) + length
 }
 
 func (profiler *Profiler) Hset(key, field, value []byte) {

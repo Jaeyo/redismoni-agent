@@ -1,35 +1,37 @@
 package config
 
-import "sync"
-
 var values map[string]interface{}
-var once sync.Once
 
-func initConfigValues() {
+func init() {
 	values = make(map[string]interface{})
 	values["version"] = "0.0.1"
 }
 
 func getConfigValue(key string, defaultValue interface{}) interface{} {
-	once.Do(func() {
-		initConfigValues()
-	})
 	if value, ok := values[key]; ok {
 		return value
 	}
 	return defaultValue
 }
 
-func setConfigValue(key string, value interface{}) {
-	once.Do(func() {
-		initConfigValues()
-	})
-	values[key] = value
+func SetRedisConfigFilePath(path string) {
+	values["redisConfigFilePath"] = path
 }
 
+func GetRedisConfigFilePath() string {
+	return string(getConfigValue("redisConfigFilePath", ""))
+}
+
+func SetAgentKey(agentKey string) {
+	values["agentKey"] = agentKey
+}
+
+func getAgentKey() string {
+	return string(getConfigValue("agentKey", ""))
+}
 
 func SetDebug(isDebug bool) {
-	setConfigValue("debug", isDebug)
+	values["debug"] = isDebug
 }
 
 func GetDebug() bool {
