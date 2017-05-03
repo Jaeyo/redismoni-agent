@@ -17,10 +17,17 @@ func (config *config) GetDebug() bool {
 	return false
 }
 
+func (config *config) GetVersion() string {
+	version, _ := config.values["version"]
+	return string(version)
+}
+
 func newConfig() *config {
-	return &config{
+	config := &config{
 		make(map[string]interface{}),
 	}
+	config.values["version"] = "0.0.1"
+	return config
 }
 
 var instance *config
