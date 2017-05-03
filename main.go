@@ -9,6 +9,7 @@ import (
 	"redismoni-agent/redisConfig"
 	"redismoni-agent/models"
 	"redismoni-agent/common/util"
+	"redismoni-agent/redisInfo"
 )
 
 func init() {
@@ -48,7 +49,12 @@ func main() {
 	infoVal := <- infoChan
 	rdbVal := <- rdbChan
 
-	fmt.Println(infoVal, rdbVal)
+	if config.GetDebug() {
+		fmt.Println(infoVal, rdbVal)
+		os.Exit(0)
+	}
+
+	// TODO IMME
 }
 
 
@@ -65,8 +71,40 @@ func getRdbDumpPath() string {
 	return rdbDumpPath
 }
 
-func getInfoMetrics(c chan int) {
-	// TODO IMME
+func getInfoMetrics(c chan []*models.Metric) {
+	metrics := []*models.Metric{}
+	info := redisInfo.GetInfo()
+
+	processId := info.ProcessId
+	if processId != -1 {
+		metrics = append(metrics, models.NewRedisInfoMetric("process_id", processId))
+	}
+
+	uptimeInSec := info.UptimeInSec
+	if uptimeInSec != -1 {
+		metrics = append(metrics, models.NewRedisInfoMetric("uptime_in_sec", uptimeInSec))
+	}
+
+	connectedClients := info.ConnectedClients
+	if connectedClients != -1 {
+		metrics = append(metrics, models.NewRedisInfoMetric("connected_clients", connectedClients))
+	}
+
+	usedMem := info.UsedMemory
+	if usedMem != -1 {
+		metrics = append(metrics, models.NewRedisInfoMetric("used_memory", usedMem))
+	}
+
+	usedCpu := info.UsedCpu
+	if usedCpu != -1 {
+		metrics = append(metrics, models.NewRedisInfoMetric("used_cpu", usedCpu))
+	}
+
+	for db, keyCount := range info.KeyCounts {
+		metrics = append(metrics, models.NewRedisInfoKeyCountMetric(db, keyCount))
+	}
+
+	c <- metrics
 }
 
 func getRdbMetrics(rdbDumpPath string, c chan []*models.Metric) {
@@ -79,12 +117,12 @@ func getRdbMetrics(rdbDumpPath string, c chan []*models.Metric) {
 	metrics := []*models.Metric{}
 	for dbNum, memUsage := range memUsages {
 		db := fmt.Sprintf("db_%d", dbNum)
-		metrics = append(metrics, models.NewRedisMetric(db, "total", "", "", memUsage.GetTotal()))
-		metrics = append(metrics, models.NewRedisMetric(db, "string", "", "", memUsage.StringUsage))
-		metrics = append(metrics, models.NewRedisMetric(db, "hash", "", "", memUsage.HashUsage))
-		metrics = append(metrics, models.NewRedisMetric(db, "set", "", "", memUsage.SetUsage))
-		metrics = append(metrics, models.NewRedisMetric(db, "list", "", "", memUsage.ListUsage))
-		metrics = append(metrics, models.NewRedisMetric(db, "sorted_set", "", "", memUsage.SortedSetUsage))
+		metrics = append(metrics, models.NewRedisRdbMetric(db, "total", memUsage.GetTotal()))
+		metrics = append(metrics, models.NewRedisRdbMetric(db, "string", memUsage.StringUsage))
+		metrics = append(metrics, models.NewRedisRdbMetric(db, "hash", memUsage.HashUsage))
+		metrics = append(metrics, models.NewRedisRdbMetric(db, "set", memUsage.SetUsage))
+		metrics = append(metrics, models.NewRedisRdbMetric(db, "list", memUsage.ListUsage))
+		metrics = append(metrics, models.NewRedisRdbMetric(db, "sorted_set", memUsage.SortedSetUsage))
 	}
 
 	c <- metrics

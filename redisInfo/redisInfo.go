@@ -20,7 +20,12 @@ type RedisInfo struct {
 
 func newRedisInfo() *RedisInfo {
 	return &RedisInfo{
-		KeyCounts: make(map[int]int),
+		-1,
+		-1,
+		-1,
+		-1,
+		-1,
+		make(map[int]int),
 	}
 }
 
